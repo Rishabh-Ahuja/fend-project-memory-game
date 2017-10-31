@@ -30,7 +30,9 @@ $(document).ready(() => {
         $('.moves').text('0');
         setTimeout(() => {
             deck.find('li').removeClass('open show');
+            clickCard();
         }, 3900);
+
     }
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -51,8 +53,12 @@ $(document).ready(() => {
     }
 
     init(cardsList);
+
 //* set up the event listener for a card. If a card is clicked:
-    deck.on('click', '.card', cardlogic);
+    function clickCard() {
+        deck.on('click', '.card', cardlogic);
+    }
+
     // set up event listener for restart button
     $('.restart').click(restart);
 
