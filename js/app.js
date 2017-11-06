@@ -2,6 +2,7 @@ $(document).ready(() => {
     "use strict";
     let deck = $('.deck');
     let openedCards = [];
+    let timer;
     /*
  * Create a list that holds all of your cards
  */
@@ -31,6 +32,7 @@ $(document).ready(() => {
         setTimeout(() => {
             deck.find('li').removeClass('open show');
             clickCard();
+            gameTimer();
         }, 3900);
 
     }
@@ -165,7 +167,8 @@ $(document).ready(() => {
 
     function checkForWinningTheGame() {
         if ($('.card').length === $('.card.match').length) {
-            swal("Good job!", `You Won The game... Your Score is ${$('.moves').text()}`, "success");
+            clearInterval(timer);
+            swal("Good job!", `You Won The game... Your Score is ${$('.moves').text()} and time you took to complete was ${$('.clock').text()}`, "success");
         }
     }
 
@@ -180,6 +183,7 @@ $(document).ready(() => {
                 if (willRestart) {
                     // when we restart the click binding is still there .. if click binding is there user can click on cards while cards are shown
                     $('.deck').off('click','.card',cardlogic);
+                    clearInterval(timer);
                     init(cardsList);
                     swal("Restarted! Your Game is Restarted", {
                         icon: "success",
@@ -191,6 +195,34 @@ $(document).ready(() => {
                 }
             });
     }
+    const gameTimer = () => {
+
+        let startTime = new Date().getTime();
+
+        // Update the timer every second
+        timer = setInterval(function() {
+
+            let now = new Date().getTime();
+
+            // Find the time diff between now and start
+            let diff = now - startTime;
+
+            // Calculate minutes and seconds
+            let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            // Add 0 if seconds are less than 10
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+
+            let currentTime = minutes + ':' + seconds;
+
+            // Update clock
+            $(".clock").text(currentTime);
+        }, 800);
+
+    };
 
     /*
      *  - display the card's symbol (put this functionality in another function that you call from this one)
