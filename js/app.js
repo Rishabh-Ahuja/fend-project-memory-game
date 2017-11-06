@@ -178,6 +178,8 @@ $(document).ready(() => {
         })
             .then((willRestart) => {
                 if (willRestart) {
+                    // when we restart the click binding is still there .. if click binding is there user can click on cards while cards are shown
+                    $('.deck').off('click','.card',cardlogic);
                     init(cardsList);
                     swal("Restarted! Your Game is Restarted", {
                         icon: "success",
