@@ -8,6 +8,7 @@ $(document).ready(() => {
  */
     let cardsList = ['diamond', 'paper-plane-o', 'anchor', 'bolt', 'cube', 'leaf', 'bicycle', 'bomb', 'diamond', 'paper-plane-o', 'anchor', 'bolt', 'cube', 'leaf', 'bicycle', 'bomb'];
 
+
     /*
      * Display the cards on the page
      *   - shuffle the list of cards using the provided "shuffle" method below
@@ -68,9 +69,7 @@ $(document).ready(() => {
 
         // check for first time clicking
         if (!openedCards.length) {
-            if (sameCardIsClicked.call(this)) {
-                swal("Oops.....", "Please Click A Different Card", "info");
-            }
+            if (sameCardIsClicked.call(this)) swal("Oops.....", "Please Click A Different Card", "info");
             showcard.call(this);
             addcard.call(this);
         }
@@ -169,7 +168,34 @@ $(document).ready(() => {
         if ($('.card').length === $('.card.match').length) {
             clearInterval(timer);
             swal("Good job!", `You Won The game... Your Score is ${$('.moves').text()} and time you took to complete was ${$('.clock').text()}`, "success");
+            replay();
         }
+
+    }
+
+    function replay() {
+        swal({
+            title: "Do You Want To Play It Again?",
+            text: 'You Played Like a Boss, Wanna Restart ?',
+            icon: 'info',
+            buttons: true,
+        })
+            .then((willReplay) => {
+                if (willReplay) {
+                    reset();
+                }
+            })
+    }
+
+    function reset() {
+        // when we restart the click binding is still there .. if click binding is there user can click on cards while cards are shown
+        $('.deck').off('click', '.card', cardlogic);
+        clearInterval(timer);
+        init(cardsList);
+        swal("Restarted! Your Game is Restarted", {
+            icon: "success",
+        });
+
     }
 
     function restart() {
@@ -181,13 +207,7 @@ $(document).ready(() => {
         })
             .then((willRestart) => {
                 if (willRestart) {
-                    // when we restart the click binding is still there .. if click binding is there user can click on cards while cards are shown
-                    $('.deck').off('click','.card',cardlogic);
-                    clearInterval(timer);
-                    init(cardsList);
-                    swal("Restarted! Your Game is Restarted", {
-                        icon: "success",
-                    });
+                    reset();
                 } else {
                     swal("You Choose Not to Restart!", "That Is Fantastic .. Carry On...", {
                         icon: 'success'
@@ -195,12 +215,13 @@ $(document).ready(() => {
                 }
             });
     }
+
     const gameTimer = () => {
 
         let startTime = new Date().getTime();
 
         // Update the timer every second
-        timer = setInterval(function() {
+        timer = setInterval(function () {
 
             let now = new Date().getTime();
 
@@ -223,15 +244,5 @@ $(document).ready(() => {
         }, 800);
 
     };
-
-    /*
-     *  - display the card's symbol (put this functionality in another function that you call from this one)
-     *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
-     *  - if the list already has another card, check to see if the two cards match
-     *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
-     *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
-     *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
-     *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
-     */
 
 });
