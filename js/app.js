@@ -3,6 +3,7 @@ $(document).ready(() => {
     let deck = $('.deck');
     let openedCards = [];
     let timer;
+    let dirty = false;
     /*
  * Create a list that holds all of your cards
  */
@@ -33,7 +34,7 @@ $(document).ready(() => {
         setTimeout(() => {
             deck.find('li').removeClass('open show');
             clickCard();
-            gameTimer();
+            // gameTimer();
         }, 3900);
 
     }
@@ -59,14 +60,18 @@ $(document).ready(() => {
 
 //* set up the event listener for a card. If a card is clicked:
     function clickCard() {
-        deck.on('click', '.card', cardlogic);
+        deck.on('click', '.card', cardLogic);
     }
 
     // set up event listener for restart button
     $('.restart').click(restart);
 
-    function cardlogic() {
-
+    function cardLogic() {
+        // we only want the timer to start when the user clicks on a card ..
+        if (!dirty) {
+            dirty = true;
+            gameTimer();
+        }
         // check for first time clicking
         if (!openedCards.length) {
             if (sameCardIsClicked.call(this)) swal("Oops.....", "Please Click A Different Card", "info");
@@ -89,6 +94,7 @@ $(document).ready(() => {
 
     }
 
+    // card is shown when user clicks on it
     function showcard() {
         $(this).addClass('open show');
     }
@@ -157,18 +163,19 @@ $(document).ready(() => {
             return templi;
         }
 
-        if (+counter.text() <= 10) stars.html(makestars(5));
-        else if (+counter.text() > 10 && +counter.text() <= 13) stars.html(makestars(4));
-        else if (+counter.text() > 13 && +counter.text() < 16) stars.html(makestars(3));
-        else if (+counter.text() > 16 && +counter.text() <= 19) stars.html(makestars(2));
+        if (+counter.text() <= 3) stars.html(makestars(3));
+        else if (+counter.text() > 3 && +counter.text() < 6) stars.html(makestars(2));
         else stars.html(makestars(1));
     }
 
     function checkForWinningTheGame() {
         if ($('.card').length === $('.card.match').length) {
             clearInterval(timer);
-            swal("Good job!", `You Won The game... Your Score is ${$('.moves').text()} and time you took to complete was ${$('.clock').text()}`, "success");
-            replay();
+            swal("Good job!", `You Won The game... Your Score is ${$('.moves').text()} and time you took to complete was ${$('.clock').text()}`, "success", {
+                closeOnClickOutside: false,
+            }).then(() => {
+                replay();
+            });
         }
 
     }
@@ -188,12 +195,16 @@ $(document).ready(() => {
     }
 
     function reset() {
-        // when we restart the click binding is still there .. if click binding is there user can click on cards while cards are shown
-        $('.deck').off('click', '.card', cardlogic);
-        clearInterval(timer);
-        init(cardsList);
         swal("Restarted! Your Game is Restarted", {
             icon: "success",
+            closeOnClickOutside: false,
+        }).then(() => {
+            // // when we restart the click binding is still there .. if click binding is there user can click on cards while cards are shown
+            $('.deck').off('click', '.card', cardLogic);
+            clearInterval(timer);
+            init(cardsList);
+            dirty = false;
+            $('.clock').text('00:00');
         });
 
     }
@@ -244,5 +255,4 @@ $(document).ready(() => {
         }, 800);
 
     };
-
 });
